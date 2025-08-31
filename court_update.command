@@ -4,7 +4,6 @@ import Foundation
 import RegexBuilder
 
 // Check for chrome-cli
-guard !result.contains("not found")
 let result = shell("which chrome-cli")
 guard !result.contains("not found") else {
 	print("Requires chrome-cli. Please execute the following to continue:")
