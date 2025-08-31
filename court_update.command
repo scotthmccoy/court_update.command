@@ -3,6 +3,17 @@
 import Foundation
 import RegexBuilder
 
+// Check for chrome-cli
+guard !result.contains("not found")
+let result = shell("which chrome-cli")
+guard !result.contains("not found") else {
+	print("Requires chrome-cli. Please execute the following to continue:")
+	print("brew install chrome-cli")
+	exit(1)
+}
+
+
+// Get the tab ID
 let tabId:Int 
 do {
 	tabId = try getTabIdOrOpen(
@@ -15,20 +26,13 @@ do {
 
 
 
-
+// Run some javascript to submit the form
 // You may need to go to Chrome and activate "View -> Developer -> Allow JavaScript from Apple Events"
 
 execute(
 	js: "document.querySelector('input[id=\\\"txtCaseNumber\\\"]').value = '24STFL12676'", 
 	tabId: tabId
 )
-
-/*
-execute(
-	js: "document.querySelector('form[id=\\\"caseSummaryForm\\\"').submit();", 
-	tabId: tabId
-)
-*/
 
 execute(
 	js: "document.querySelector('input[id=\\\"submit1\\\"').click();", 
@@ -46,13 +50,21 @@ guard let mostRecentDate = getMostRecentDateFromSource() else {
 	exit(1)
 }
 
+// Convert to days ago
+guard let daysAgo = Calendar.current.dateComponents([.day], from: mostRecentDate, to: Date()).day else {
+	printError("No dates!")
+	shell("say No Dates")
+	exit(1)
+}
+shell("say \"\(daysAgo) days ago\"")
 
-let dateFormatter = DateFormatter()
-dateFormatter.dateFormat = "MMMM d, yyyy"
-let strDate = dateFormatter.string(from: mostRecentDate)
-print("Most Recent Update: \(strDate)")
 
-shell("say \"\(strDate)\"")
+//let dateFormatter = DateFormatter()
+//dateFormatter.dateFormat = "MMMM d, yyyy"
+//let strDate = dateFormatter.string(from: mostRecentDate)
+//print("Most Recent Update: \(strDate)")
+
+
 
 
 
